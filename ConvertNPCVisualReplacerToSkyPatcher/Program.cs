@@ -83,8 +83,6 @@ namespace ConvertNPCVisualReplacerToSkyPatcher
 
         private static void ConvertToSkyPatcher(IPatcherState<ISkyrimMod, ISkyrimModGetter> state, string ModToConvert, string ModToConvertPath)
         {
-            
-
             string meshPath = System.IO.Path.Combine(ModToConvertPath, "meshes", "actors", "character", "FaceGenData", "FaceGeom");
             string texturePath = System.IO.Path.Combine(ModToConvertPath, "textures", "actors", "character", "FaceGenData", "FaceTint");
             string binaryPath = System.IO.Path.Combine(state.DataFolderPath, ModToConvert);
@@ -136,7 +134,7 @@ namespace ConvertNPCVisualReplacerToSkyPatcher
                     saveFile = true;
                     ModToConvertOverLay.Npcs.Remove(o.orgNPC.FormKey);
                     var newNPC = ModToConvertOverLay.Npcs.DuplicateInAsNewRecord(o.orgNPC, o.newEditorId);
-
+                    newNPC.EditorID = o.newEditorId;
                     newNPC.MajorRecordFlagsRaw &= ~(int)SkyrimMajorRecord.SkyrimMajorRecordFlag.Compressed;
                     // newNPC.EditorID = o.newEditorId;
 
@@ -145,8 +143,8 @@ namespace ConvertNPCVisualReplacerToSkyPatcher
 
                     WriteErrorLine($"{o.orgEditorId} : {o.orgNPC.FormKey.ToString()} --> {newNPC.FormKey.ToString()}");
 
-                    string newMeshFilename = $"{newFormId:x8}.nif";
-                    string newTextureFilename = $"{newFormId:x8}.dds";
+                    string newMeshFilename = $"{newFormId:x8}.nif".ToUpper();
+                    string newTextureFilename = $"{newFormId:x8}.dds".ToUpper();
                     string ogTintMask = $@"{o.orgNPC.FormKey.ModKey.FileName}\{textureFilename}";
                     string newTintMask = $@"{newNPC.FormKey.ModKey.FileName}\{newTextureFilename}";
                     string meshPath = System.IO.Path.Combine(o.orgMeshPath, meshFilename);
@@ -251,7 +249,8 @@ namespace ConvertNPCVisualReplacerToSkyPatcher
 
         private static string CreateCloneEditorId(string editorId, uint formId)
         {
-            return string.Format($"{editorId}_{formId:x8}_clone");
+            string formID = $"{formId:x8}".ToUpper();
+            return string.Format($"{editorId}_{formID}_clone");
         }
 
         private static bool BackUpOriginalMod(string OriginalModPath)
