@@ -125,8 +125,8 @@ namespace ConvertNPCVisualReplacerToSkyPatcher
             bool saveFile = false;
             overrideList.ForEach(o =>
             {
-                string meshFilename = $"{o.orgFormId:x8}.nif";
-                string textureFilename = $"{o.orgFormId:x8}.dds";
+                string meshFilename = $"{o.orgFormId:x8}.nif".ToUpper();
+                string textureFilename = $"{o.orgFormId:x8}.dds".ToUpper();
 
                 if (FormKey.TryFactory($"{o.newFormId.ToString("x6")}:{ModToConvertOverLay.ModKey.FileName}", out FormKey newKey))
                 {
@@ -136,7 +136,7 @@ namespace ConvertNPCVisualReplacerToSkyPatcher
                     var newNPC = ModToConvertOverLay.Npcs.DuplicateInAsNewRecord(o.orgNPC, o.newEditorId);
                     newNPC.EditorID = o.newEditorId;
                     newNPC.MajorRecordFlagsRaw &= ~(int)SkyrimMajorRecord.SkyrimMajorRecordFlag.Compressed;
-                    // newNPC.EditorID = o.newEditorId;
+                    newNPC.EditorID = o.newEditorId;
 
                     uint newFormId = newNPC.FormKey.ID;
                     bool skypatch = false;
@@ -181,8 +181,8 @@ namespace ConvertNPCVisualReplacerToSkyPatcher
 
                     if (skypatch)
                     {
-                        skypatchOut.AppendLine($";Name:{o.orgNPC.Name} EditorID:{o.orgNPC.EditorID?.ToString() ?? string.Empty}");
-                        skypatchOut.AppendLine($"filterByNPCs={o.orgNPC.FormKey.ModKey.FileName}|{o.orgNPC.FormKey.ID.ToString("x8")}:copyVisualStyle={newNPC.FormKey.ModKey.FileName}|{newNPC.FormKey.ID.ToString("x8")}:weight={newNPC.Weight}:height={newNPC.Height}");
+                        skypatchOut.AppendLine($";Name:{o.orgNPC.Name} | EditorID:{o.orgNPC.EditorID?.ToString() ?? string.Empty}");
+                        skypatchOut.AppendLine($"filterByNPCs={o.orgNPC.FormKey.ModKey.FileName}|{o.orgNPC.FormKey.ID.ToString("x8").ToUpper()}:copyVisualStyle={newNPC.FormKey.ModKey.FileName}|{newNPC.FormKey.ID.ToString("x8").ToUpper()}:weight={newNPC.Weight}:height={newNPC.Height}");
                     }
                 }
             });
@@ -316,6 +316,8 @@ namespace ConvertNPCVisualReplacerToSkyPatcher
         }
         private static void CleanBijinTexture(string filePath, string race)
         {
+            race = race.Replace("Nord", string.Empty, StringComparison.InvariantCultureIgnoreCase);
+
             Dictionary<string, string> bijinTexturesToSkyrim = new Dictionary<string, string>();
             bijinTexturesToSkyrim.Add(@"bijin npcs\femalehead.dds", @"Female\FemaleHead.dds");
             bijinTexturesToSkyrim.Add(@"bijin npcs\femalehead_msn.dds", @$"{race}Female\FemaleHead_msn.dds");
